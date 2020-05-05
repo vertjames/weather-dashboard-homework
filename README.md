@@ -7,7 +7,7 @@ In this exercise, we were tasked with building a weather dashboard using the [Op
 
 ## Process
 
-I used Geocode.xyz API to turn entered city name into lat & lon, then used that in OpenWeatherMap's one-call API to generate all the data, which populates the different elements on the page. 
+I used OpenWeatherMap's Current Weather API to turn entered city name into lat & lon, then used that in OpenWeatherMap's One-Call API to generate all the data, which populates the different elements on the page. I also used MomentJS's API to populate the date fields.
 
 Here is how the app appears in-browser:
 
@@ -16,4 +16,4 @@ Here is how the app appears in-browser:
 
 ## Status
 
-This assigment is in progress. I still have to get local storage to saved the searched-for cities so they can be recalled, and I'm also having inconsistency issues with Geocode.xyz's API (it's throwing 403 Forbidden warnings).
+This assigment is in progress. I still have to get local storage to saved the searched-for cities so they can be recalled.

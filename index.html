@@ -74,15 +74,15 @@
     document.getElementById('search').addEventListener('click', event => {
       // Stop the form from auotmatically clearing itself:
       event.preventDefault()
-      // Access the Geocode.xyz API to get the latitude and longitude of the entered city:
-      if (document.getElementById('cityName').value.length > 1) {
-        fetch(`https://geocode.xyz/${document.getElementById('cityName').value}?json=1`)
+        // Use OpenWeatherMap CURRENT WEATHER API to get the latitude and longitude of the entered city:
+        if (document.getElementById('cityName').value.length > 1) {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('cityName').value}&appid=9451d4d65441a319ea0864da00ab1f78`)
           // Return the data I request as an object:      
           .then(r => r.json())
           // Return the following data:
           .then(coordinates => {
-        // Access the OpenWeatherMap API, entering in the lattitude and longitude from the Geocode.xyz output:
-        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.latt}&lon=${coordinates.longt}&units=imperial&appid=9451d4d65441a319ea0864da00ab1f78`)
+        // Access the OpenWeatherMap ONE CALL API, entering in the lattitude and longitude from the CURRENT WEATHER API fetch output:
+        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.coord.lat}&lon=${coordinates.coord.lon}&units=imperial&appid=9451d4d65441a319ea0864da00ab1f78`)
             // Return the data I request as an object:      
             .then(r => r.json())
             // Return the following data:
