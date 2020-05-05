@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <title>Weather Dashboard</title>
+</head>
+<body>
+
+<!-- GIVEN a weather dashboard with form inputs -->
+ <!-- Header  -->
+  <div class="container">
+    <div class="p-3 mb-2 bg-dark text-center text-white">
+      <h1>Weather Dashboard</h1>
+    </div>
+   <!-- Content area  -->
+    <div class="row">
+     <!-- Search bar and city history  -->
+      <div class="col-3">
+        <h6>Search For a City:</h6>
+        <form class="form-inline">
+          <div class="input-group mb-2 mr-sm-2">
+            <input type="text" class="form-control" id="cityName" placeholder="City Name">
+            <div class="input-group-prepend">
+              <button id="search" class="input-group-text">&#x1F50D</button>
+            </div>
+          </div>
+        </form>
+        <div id="cityHistory"></div>
+      </div>
+      
+     <!-- Everything else  -->
+      <div class="col">
+       <!-- Chosent city with today's weather  -->
+        <div class="row border border-secondary rounded" id="today">
+          <div id="todaysWeather">Chosen City Today</div>
+        </div>
+        <p></p>
+       <!-- Five-day forecast  -->
+        <div class="row">
+          <h5>5-Day Forecast:</h5>
+        </div>
+        <div class="row">
+          <div class="col" id="day1">
+          </div>
+          <div class="col" id="day2">
+          </div>
+          <div class="col" id="day3">
+          </div>
+          <div class="col" id="day4">
+          </div>
+          <div class="col" id="day5">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc="
+    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script>
+
+  $(document).ready(function () {    
+    // Listen for a click on the "search" button:
+    document.getElementById('search').addEventListener('click', event => {
+      // Stop the form from auotmatically clearing itself:
+      event.preventDefault()
+      // Access the Geocode.xyz API to get the latitude and longitude of the entered city:
+      if (document.getElementById('cityName').value.length > 1) {
+        fetch(`https://geocode.xyz/${document.getElementById('cityName').value}?json=1`)
+          // Return the data I request as an object:      
+          .then(r => r.json())
+          // Return the following data:
+          .then(coordinates => {
+        // Access the OpenWeatherMap API, entering in the lattitude and longitude from the Geocode.xyz output:
+        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.latt}&lon=${coordinates.longt}&units=imperial&appid=9451d4d65441a319ea0864da00ab1f78`)
+            // Return the data I request as an object:      
+            .then(r => r.json())
+            // Return the following data:
+            .then(cityWeather => {
+              // Create a div for a bootstrap card for styling CURRENT WEATHER: 
+              let cityWeatherElem = document.createElement('div')
+              cityWeatherElem.className = 'card'
+              cityWeatherElem.style = 'width: 24rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              cityWeatherElem.innerHTML = `
+                  <div class="card-body">
+                    <h2 class="card-title">
+                      ${document.getElementById('cityName').value}<img 
+                    src="http://openweathermap.org/img/w/${cityWeather.current.weather[0].icon}.png" alt="${cityWeather.current.weather[0].description}">
+                    </h2>
+                    <h5>
+                      ${moment().format("dddd, MMM Do, YYYY")}
+                    </h5>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">
+                        Temperature: ${cityWeather.current.temp}&#176;
+                      </li>
+                      <li class="list-group-item">
+                        Humidity: ${cityWeather.current.humidity}%
+                      </li>
+                      <li class="list-group-item">
+                        Windspeed: ${cityWeather.current.wind_speed} MPH
+                      </li>
+                      <li class="list-group-item" id="uvIndex">
+                        UV Index: ${cityWeather.current.uvi}
+                      </li>
+                    </ul>
+                  </div>
+                ` 
+            // WHEN I view future weather conditions for that city
+            // THEN I am presented with a 5 - day forecast that displays the date, an icon representation of weather conditions, the temperature, and the humidity:
+              // Create a div for card for weather in 1 day:
+              let day1Elem = document.createElement('div')
+              day1Elem.className = 'card text-white bg-primary mb-3'
+              day1Elem.style = 'max-width: 18rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              day1Elem.innerHTML = `
+                <div class="card-header">${moment().add(1, 'days').format("MMM Do")}</div>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <img src="http://openweathermap.org/img/w/${cityWeather.daily[1].weather[0].icon}.png" 
+                  alt="${cityWeather.daily[1].weather[0].description}">
+                  </h2>
+                  <p class="card-text">Temperature: ${cityWeather.daily[1].temp.day}&#176;</p>
+                  <p class="card-text">Humidity: ${cityWeather.daily[1].humidity}%</p>
+                </div>
+              `
+              // Create a div for card for weather in 2 days:
+              let day2Elem = document.createElement('div')
+              day2Elem.className = 'card text-white bg-primary mb-3'
+              day2Elem.style = 'max-width: 18rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              day2Elem.innerHTML = `
+                <div class="card-header">${moment().add(2, 'days').format("MMM Do")}</div>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <img src="http://openweathermap.org/img/w/${cityWeather.daily[2].weather[0].icon}.png" 
+                  alt="${cityWeather.daily[2].weather[0].description}">
+                  </h2>
+                  <p class="card-text">Temperature: ${cityWeather.daily[2].temp.day}&#176;</p>
+                  <p class="card-text">Humidity: ${cityWeather.daily[2].humidity}%</p>
+                </div>
+              `
+              // Create a div for card for weather in 3 days:
+              let day3Elem = document.createElement('div')
+              day3Elem.className = 'card text-white bg-primary mb-3'
+              day3Elem.style = 'max-width: 18rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              day3Elem.innerHTML = `
+                <div class="card-header">${moment().add(3, 'days').format("MMM Do")}</div>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <img src="http://openweathermap.org/img/w/${cityWeather.daily[3].weather[0].icon}.png" 
+                  alt="${cityWeather.daily[3].weather[0].description}">
+                  </h2>
+                  <p class="card-text">Temperature: ${cityWeather.daily[3].temp.day}&#176;</p>
+                  <p class="card-text">Humidity: ${cityWeather.daily[3].humidity}%</p>
+                </div>
+              `
+              // Create a div for card for weather in 4 days:
+              let day4Elem = document.createElement('div')
+              day4Elem.className = 'card text-white bg-primary mb-3'
+              day4Elem.style = 'max-width: 18rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              day4Elem.innerHTML = `
+                <div class="card-header">${moment().add(4, 'days').format("MMM Do")}</div>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <img src="http://openweathermap.org/img/w/${cityWeather.daily[4].weather[0].icon}.png" 
+                  alt="${cityWeather.daily[4].weather[0].description}">
+                  </h2>
+                  <p class="card-text">Temperature: ${cityWeather.daily[4].temp.day}&#176;</p>
+                  <p class="card-text">Humidity: ${cityWeather.daily[4].humidity}%</p>
+                </div>
+              `
+              // Create a div for card for weather in 5 days:
+              let day5Elem = document.createElement('div')
+              day5Elem.className = 'card text-white bg-primary mb-3'
+              day5Elem.style = 'max-width: 18rem;'
+              // Insert city name, weather icon, date, temp, humidity, windspeed, UV index based on info from the API: 
+              day5Elem.innerHTML = `
+                <div class="card-header">${moment().add(5, 'days').format("MMM Do")}</div>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <img src="http://openweathermap.org/img/w/${cityWeather.daily[5].weather[0].icon}.png" 
+                  alt="${cityWeather.daily[5].weather[0].description}">
+                  </h2>
+                  <p class="card-text">Temperature: ${cityWeather.daily[5].temp.day}&#176;</p>
+                  <p class="card-text">Humidity: ${cityWeather.daily[5].humidity}%</p>
+                </div>
+              `
+              // Clear out the form after submission:          
+              document.getElementById('cityName').value = ''
+              // Only allow one city card(s) at a time:
+              document.getElementById('todaysWeather').innerHTML = ''
+              document.getElementById('day1').innerHTML = ''
+              document.getElementById('day2').innerHTML = ''
+              document.getElementById('day3').innerHTML = ''
+              document.getElementById('day4').innerHTML = ''
+              document.getElementById('day5').innerHTML = ''
+              // Append the cards to the divs in the body: 
+              document.getElementById('todaysWeather').append(cityWeatherElem)
+              document.getElementById('day1').append(day1Elem)
+              document.getElementById('day2').append(day2Elem)
+              document.getElementById('day3').append(day3Elem)
+              document.getElementById('day4').append(day4Elem)
+              document.getElementById('day5').append(day5Elem)
+
+              // WHEN I view the UV index
+              // THEN I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
+              let uviColor = `${cityWeather.current.uvi}`
+              if (uviColor < 3) {
+                document.getElementById('uvIndex').innerHTML = `
+                  <li class="list-group-item" id="uvIndex" style="background-color: green">
+                  UV Index: ${cityWeather.current.uvi}
+                </li>
+                `
+              } else if (3 < uviColor && uviColor < 6) {
+                  document.getElementById('uvIndex').innerHTML = `
+                    <li class="list-group-item" id="uvIndex" style="background-color: yellow">
+                    UV Index: ${cityWeather.current.uvi}
+                  </li>
+                  `
+              } else if (6 < uviColor && uviColor < 8) {
+                  document.getElementById('uvIndex').innerHTML = `
+                    <li class="list-group-item" id="uvIndex" style="background-color: orange">
+                    UV Index: ${cityWeather.current.uvi}
+                  </li>
+                  `
+              } else if (8 < uviColor && uviColor < 11) {
+                  document.getElementById('uvIndex').innerHTML = `
+                  <li class="list-group-item" id="uvIndex" style="background-color: red">
+                  UV Index: ${cityWeather.current.uvi}
+                </li>
+                `
+              } else if (uviColor > 11) {
+                document.getElementById('uvIndex').innerHTML = `
+                  <li class="list-group-item" id="uvIndex" style="background-color: violet">
+                  UV Index: ${cityWeather.current.uvi}
+                </li>
+                `
+              }      
+            })
+
+            })
+            // Catch any errors and log them to the console AND alert the user:
+            .catch(e => {
+              console.log(e)
+              alert('City not found. Please try again :)')
+              document.getElementById('cityName').value = ''
+              document.getElementById('todaysWeather').innerHTML = ''
+            })
+          }
+        
+
+      // Create a button of city name and append to cityHistory div:
+      let cityHistoryButton = document.createElement('button')
+      cityHistoryButton.className = 'btn btn-outline-secondary btn-block'
+      cityHistoryButton.id = `${document.getElementById('cityName').value}`
+      cityHistoryButton.innerHTML = `${document.getElementById('cityName').value}`
+      document.getElementById('cityHistory').append(cityHistoryButton)
+
+      // City searches are added to the search history
+      let storeCityName = document.getElementById('cityName').value
+      // ...and this turns those values into a string (which is required for local storage):
+      localStorage.setItem('storeCityName', JSON.stringify(storeCityName))  
+
+      // WHEN I refresh the page
+      // THEN the saved events persist 
+    
+      // This parses the string of user-entered values and inserts them to a template literal that is then inserted into the div called "cityHistory" in the HTML:
+      // This first line here just checks to make sure the user has input information and submitted the form:
+      if (localStorage.getItem('storeCityName')) {
+        let storeCityName = JSON.parse(localStorage.getItem('storeCityName'))
+        document.getElementById('cityHistory').append(cityHistoryButton)
+        // document.getElementById('cityHistory').append('Hi')
+        // document.getElementById('cityHistory').innerHTML = `
+        //         ${storeCityName.enteredText}
+        //       `
+      }
+    
+    })
+
+      // WHEN I click on a city in the search history (listen for a click on cityHistory buttons)
+      // THEN I am again presented with current and future conditions for that city (load weather for that respective city)
+      // document.getElementById(`${document.getElementById('cityName').value}`).addEventListener('click', event => {
+      // })  
+  })
+  </script>
+</body>
+</html>
