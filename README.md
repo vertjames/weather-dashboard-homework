@@ -16,4 +16,4 @@ Here is how the app appears in-browser:
 
 ## Status
 
-This assigment is in progress. I still have to get local storage to saved the searched-for cities so they can be recalled.
+This assigment is complete.
