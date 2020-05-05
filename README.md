@@ -11,7 +11,7 @@ I used Geocode.xyz API to turn entered city name into lat & lon, then used that 
 
 Here is how the app appears in-browser:
 
-![workday scheduler](workday-scheduler-demo.jpg)
+![workday scheduler](weather-dashboard-demo.png)
 
 
 ## Status
