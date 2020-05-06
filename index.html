@@ -299,12 +299,12 @@
       document.getElementById('cityHistory').addEventListener('click', event => {
         const isButton = event.target.nodeName === "BUTTON"
         if (isButton) {
-        console.log('ping')
+        // console.log('ping')
         // Stop the form from automatically clearing itself:
         event.preventDefault()
         // Use OpenWeatherMap CURRENT WEATHER API to get the latitude and longitude of the entered city:
         // if (document.getElementById($(this).text())) {
-          console.log(event.target.id)
+          // console.log(event.target.id)
           fetch(`https://api.openweathermap.org/data/2.5/weather?q=${event.target.id}&appid=9451d4d65441a319ea0864da00ab1f78`)
             // Return the data I request as an object:      
             .then(r => r.json())
@@ -324,7 +324,7 @@
                   cityWeatherElem.innerHTML = `
                     <div class="card-body">
                       <h2 class="card-title">
-                        ${document.getElementById('cityName').value}<img 
+                        ${event.target.id}<img 
                       src="http://openweathermap.org/img/w/${cityWeather.current.weather[0].icon}.png" alt="${cityWeather.current.weather[0].description}">
                       </h2>
                       <h5>
